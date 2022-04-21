@@ -13,6 +13,7 @@ const userSchema = mongoose.Schema({
     minLength: 2,
     maxLength: 255,
   },
+  aboutMe: { type: String, minLength: 2, maxLength: 1024 },
   post: [{type: postSchema}], 
   friends: [{type: mongoose.Types.ObjectId}],
   pendingFriends: [{type: mongoose.Types.ObjectId}],

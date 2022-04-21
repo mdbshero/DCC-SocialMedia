@@ -92,6 +92,7 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
   }
 });
 
+//PUT add an about me
 //put user post
 //http://localhost:3011/api/users/
 router.put("/:userId/newPost",[auth], async (req, res)=>{

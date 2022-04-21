@@ -5,6 +5,7 @@ const admin = require("../middleware/admin");
 
 const bcrypt = require("bcrypt");
 const express = require("express");
+const { Post } = require("../models/post");
 const router = express.Router();
 
 //* POST register a new user
@@ -90,5 +91,34 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
+
+//put user post
+//http://localhost:3011/api/users/
+router.put("/:userId/newPost",[auth], async (req, res)=>{
+  try {
+      
+      let post = await User.findById(req.params.userId);
+      if (!post)
+       return res
+       .status(400)
+       .send(`Comment with Id of ${req.params.userId} does not exist!`);
+
+       let newPost = new Post({
+           post: req.body.post          
+       })
+       console.log(newPost)
+       post.post.push(newPost)
+       await post.save()
+       return res
+       .status(201)
+       .send(post)       
+
+ 
+  } catch (error) {
+      return res
+      .status(500)
+      .send(`Internal Server Error: ${error}`);        
+  }
+})
 
 module.exports = router;

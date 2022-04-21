@@ -121,4 +121,19 @@ router.put("/:userId/newPost",[auth], async (req, res)=>{
   }
 })
 
+ //PUT add an about me
+router.put("/:userId", [auth], async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user)
+      return res
+        .status(400)
+        .send(`User with id ${req.params.userId} does not exist!`);
+    let about = await User.findByIdAndUpdate(req.params.userId, req.body)
+    return res.send(about);    
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+})
+
 module.exports = router;

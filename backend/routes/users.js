@@ -136,50 +136,49 @@ router.put("/:userId", [auth], async (req, res) => {
   }
 });
 
-//PUT Comment like
-router.put(":userId", [auth], async (req, res) =>{
+// //PUT Comment like
+// router.put(":userId", [auth], async (req, res) =>{
+//   try{
+//     let user = await User.findByIdAndUpdate(req.params.userId);
+//     if (!user)
+//     return res
+//     .status(400)
+//     .send(`User with id ${req.params.userId} does not exist!`);
+//     const posts = user.post.id(req.params.postId);
+//     console.log(posts)
+//     if(!posts)
+//     return res
+//     .status(400)
+//     .send(`There is no post.`);
+//     posts.likes++;
+//     await user.save();
+//     return res.send(posts)    
+//   }catch (error){
+//     return res
+//     .status(500)
+//     .send(`Internal server error: ${error}`)
+//   }
+// });
+
+//PUT likes and dislikes
+router.put("/:userId/post/:postId", async(req, res) => {
   try{
-    let user = await User.findByIdAndUpdate(req.params.userId);
-    if (!user)
-    return res
-    .status(400)
-    .send(`User with id ${req.params.userId} does not exist!`);
-    const posts = user.post.id(req.params.postId);
-    console.log(posts)
-    if(!posts)
-    return res
-    .status(400)
-    .send(`There is no post.`);
-    posts.likes++;
-    await user.save();
-    return res.send(posts)    
+
+      let user = await User.findById(req.params.userId);
+      if(!user) return res.status(400).send(`Could not find any comments with the ID of ${req.params.userId}`)
+  
+      const post = user.post.id(req.params.postId);
+      if (!post)
+      return res.status(400).send(`There is no post.`);
+      post.likes = req.body.likes;
+      post.dislikes = req.body.dislikes;
+
+      await user.save();
+      return res.send(post)
+  
   }catch (error){
-    return res
-    .status(500)
-    .send(`Internal server error: ${error}`)
+      return res.status(500).send(`internal server errror: ${error}`)
   }
-});
-//PUT Comment dislike
-router.put(":userId/dislike", [auth], async (req, res) =>{
-  try{
-    let user = await User.findById(req.params.userId);
-    if (!user)
-    return res
-    .status(400)
-    .send(`User with id ${req.params.userId} does not exist!`);
-    const post = user.post.id(req.params.postId);
-    if(!post)
-    return res
-    .status(400)
-    .send(`There is no post.`);
-    post.dislikes++;
-    await user.save();
-    return res.send(post)    
-  }catch (error){
-    return res
-    .status(500)
-    .send(`Internal server error: ${error}`)
-  }
-});
+})
 
 module.exports = router;

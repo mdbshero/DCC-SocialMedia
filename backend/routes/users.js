@@ -136,31 +136,7 @@ router.put("/:userId/aboutMe", [auth], async (req, res) => {
   }
 });
 
-// //PUT Comment like
-// router.put(":userId", [auth], async (req, res) =>{
-//   try{
-//     let user = await User.findByIdAndUpdate(req.params.userId);
-//     if (!user)
-//     return res
-//     .status(400)
-//     .send(`User with id ${req.params.userId} does not exist!`);
-//     const posts = user.post.id(req.params.postId);
-//     console.log(posts)
-//     if(!posts)
-//     return res
-//     .status(400)
-//     .send(`There is no post.`);
-//     posts.likes++;
-//     await user.save();
-//     return res.send(posts)    
-//   }catch (error){
-//     return res
-//     .status(500)
-//     .send(`Internal server error: ${error}`)
-//   }
-// });
-
-//PUT likes and dislikes
+// PUT likes and dislikes
 router.put("/:userId/post/:postId", async(req, res) => {
   try{
 
@@ -207,22 +183,22 @@ router.put("/:userId", async(req,res) => {
 });
 
 // unfollow 
-router.put("/:id/unfollow", async(req, res) => {
+router.put("/:userId/unfollow", async(req, res) => {
   // if not same users
-  if(req.body.userId !== req.params.id){
+  if(req.body.userId !== req.params.userId){
 
       try{
-          const user = await User.findById(req.params.id);
+          const user = await User.findByIdAndUpdate(req.params.userId);
           const currentUser = await User.findById(req.body.userId);
           if(user.friends.includes(req.body.userId)){
               await user.updateOne({ $pull: { friends: req.body.userId } });
-              await currentUser.updateOne({ $pull: { friends: req.params.id } });
-              res.status(200)("User has been unfollowed!");
+              await currentUser.updateOne({ $pull: { friends: req.params.userId } });
+              res.status(200).send("User has been unfollowed!");
           } else{
-              res.status(403)("You already unfollowed this user!");
+              res.status(403).send("You already unfollowed this user!");
           }
       } catch(err){
-          res.status(500)(err);
+          res.status(500).send(err);
       }
   } else {
       res.status(403)("You cannot unfollow yourself!");

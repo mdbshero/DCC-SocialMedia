@@ -123,7 +123,7 @@ router.put("/:userId/newPost",[auth], async (req, res)=>{
 })
 
  //PUT add an about me
-router.put("/:userId", [auth], async (req, res) => {
+router.put("/:userId/aboutMe", [auth], async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user)
@@ -136,5 +136,53 @@ router.put("/:userId", [auth], async (req, res) => {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
 })
+
+// follow 
+router.put("/:userId", async(req,res) => {
+  // if not same users
+  if(req.body.userId !== req.params.userId){
+
+      try{
+          const user = await User.findByIdAndUpdate(req.params.userId);
+          const currentUser = await User.findById(req.body.userId);
+          // if users' followers does not have this particular id
+          // it means it is not in users followers list, and hence can be followed
+          if(!user.friends.includes(req.body.userId)){
+              await user.updateOne({ $push: { friends: req.body.userId } });
+              await currentUser.updateOne({ $push: { friends: req.params.userId } });
+              res.status(200).send("User has been followed");
+          } else {
+              res.status(403).send("You already followed this user!");
+          }
+      } catch(err){
+          res.status(500).send(err)
+      }
+  } else {
+      res.status(403)("You cannot follow yourself!");
+  }
+});
+
+// unfollow 
+router.put("/:id/unfollow", async(req, res) => {
+  // if not same users
+  if(req.body.userId !== req.params.id){
+
+      try{
+          const user = await User.findById(req.params.id);
+          const currentUser = await User.findById(req.body.userId);
+          if(user.friends.includes(req.body.userId)){
+              await user.updateOne({ $pull: { friends: req.body.userId } });
+              await currentUser.updateOne({ $pull: { friends: req.params.id } });
+              res.status(200)("User has been unfollowed!");
+          } else{
+              res.status(403)("You already unfollowed this user!");
+          }
+      } catch(err){
+          res.status(500)(err);
+      }
+  } else {
+      res.status(403)("You cannot unfollow yourself!");
+  }
+});
 
 module.exports = router;

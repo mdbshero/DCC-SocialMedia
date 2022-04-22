@@ -39,7 +39,9 @@ const validateUser = (user) => {
     email: Joi.string().min(5).max(255).required().email(),
     password: Joi.string().min(5).max(1024).required(),
     aboutMe: Joi.string().min(2).max(1024),
-    isAdmin: Joi.bool().required()
+    isAdmin: Joi.bool().required(),
+    friends: Joi.isRef(),
+    pendingFriends: Joi.isRef()
   });
   return schema.validate(user);
 };

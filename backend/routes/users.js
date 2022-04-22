@@ -92,7 +92,6 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
   }
 });
 
-//PUT add an about me
 //put user post
 //http://localhost:3011/api/users/
 router.put("/:userId/newPost",[auth], async (req, res)=>{
@@ -102,7 +101,7 @@ router.put("/:userId/newPost",[auth], async (req, res)=>{
       if (!post)
        return res
        .status(400)
-       .send(`Comment with Id of ${req.params.userId} does not exist!`);
+       .send(`Post with Id of ${req.params.userId} does not exist!`);
 
        let newPost = new Post({
            post: req.body.post          
@@ -120,7 +119,7 @@ router.put("/:userId/newPost",[auth], async (req, res)=>{
       .status(500)
       .send(`Internal Server Error: ${error}`);        
   }
-})
+});
 
  //PUT add an about me
 router.put("/:userId", [auth], async (req, res) => {
@@ -134,6 +133,51 @@ router.put("/:userId", [auth], async (req, res) => {
     return res.send(about);    
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+// //PUT Comment like
+// router.put(":userId", [auth], async (req, res) =>{
+//   try{
+//     let user = await User.findByIdAndUpdate(req.params.userId);
+//     if (!user)
+//     return res
+//     .status(400)
+//     .send(`User with id ${req.params.userId} does not exist!`);
+//     const posts = user.post.id(req.params.postId);
+//     console.log(posts)
+//     if(!posts)
+//     return res
+//     .status(400)
+//     .send(`There is no post.`);
+//     posts.likes++;
+//     await user.save();
+//     return res.send(posts)    
+//   }catch (error){
+//     return res
+//     .status(500)
+//     .send(`Internal server error: ${error}`)
+//   }
+// });
+
+//PUT likes and dislikes
+router.put("/:userId/post/:postId", async(req, res) => {
+  try{
+
+      let user = await User.findById(req.params.userId);
+      if(!user) return res.status(400).send(`Could not find any comments with the ID of ${req.params.userId}`)
+  
+      const post = user.post.id(req.params.postId);
+      if (!post)
+      return res.status(400).send(`There is no post.`);
+      post.likes = req.body.likes;
+      post.dislikes = req.body.dislikes;
+
+      await user.save();
+      return res.send(post)
+  
+  }catch (error){
+      return res.status(500).send(`internal server errror: ${error}`)
   }
 })
 

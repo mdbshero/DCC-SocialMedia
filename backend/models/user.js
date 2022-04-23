@@ -41,7 +41,8 @@ const validateUser = (user) => {
     aboutMe: Joi.string().min(2).max(1024),
     isAdmin: Joi.bool().required(),
     friends: Joi.isRef(),
-    pendingFriends: Joi.isRef()
+    pendingFriends: Joi.isRef(),
+    post: Joi.isSchema()
   });
   return schema.validate(user);
 };

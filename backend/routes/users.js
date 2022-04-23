@@ -69,7 +69,6 @@ router.post("/login", async (req, res) => {
 // Get all users
 router.get("/", [auth], async (req, res) => {
   try {
-    console.log(req.user);
     const users = await User.find();
     return res.send(users);
   } catch (ex) {
@@ -94,34 +93,51 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
 
 //put user post
 //http://localhost:3011/api/users/
-router.put("/:userId/newPost",[auth], async (req, res)=>{
+router.put("/:userId/newPost", [auth], async (req, res) => {
   try {
-      
-      let post = await User.findById(req.params.userId);
-      if (!post)
-       return res
-       .status(400)
-       .send(`Post with Id of ${req.params.userId} does not exist!`);
-
-       let newPost = new Post({
-           post: req.body.post          
-       })
-       console.log(newPost)
-       post.post.push(newPost)
-       await post.save()
-       return res
-       .status(201)
-       .send(post)       
-
- 
-  } catch (error) {
+    let post = await User.findById(req.params.userId);
+    if (!post)
       return res
-      .status(500)
-      .send(`Internal Server Error: ${error}`);        
+        .status(400)
+        .send(`Post with Id of ${req.params.userId} does not exist!`);
+
+    let newPost = new Post({
+      post: req.body.post,
+    });
+    console.log(newPost);
+    post.post.push(newPost);
+    await post.save();
+    return res.status(201).send(post);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
   }
 });
 
- //PUT add an about me
+// delete a post
+router.delete("/:userId/deletePost/:postId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    for (let i = 0; i < user.post.length; i++) {
+      console.log(user.post[i]._id);
+      console.log(req.params.postId);
+      // if (!user.post[i]._id) {
+      // return res
+      //   .status(400)
+      //   .send(`Post with Id of ${req.params.postId} does not exist!`);
+      // }
+      if (user.post[i]._id == req.params.postId) {
+        user.post[i].remove();console.log("trigger")
+        await user.save();
+        return res.status(200).send("The post has been deleted!");
+      }
+    }
+    return res.status(400).send("you cannot delete other user's posts");
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+//PUT add an about me
 router.put("/:userId/aboutMe", [auth], async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -129,79 +145,79 @@ router.put("/:userId/aboutMe", [auth], async (req, res) => {
       return res
         .status(400)
         .send(`User with id ${req.params.userId} does not exist!`);
-    let about = await User.findByIdAndUpdate(req.params.userId, req.body)
-    return res.send(about);    
+    let about = await User.findByIdAndUpdate(req.params.userId, req.body);
+    return res.send(about);
   } catch (error) {
     return res.status(500).send(`Internal Server Error: ${error}`);
   }
 });
 
 // PUT likes and dislikes
-router.put("/:userId/post/:postId", async(req, res) => {
-  try{
+router.put("/:userId/post/:postId", async (req, res) => {
+  try {
+    let user = await User.findById(req.params.userId);
+    if (!user)
+      return res
+        .status(400)
+        .send(
+          `Could not find any comments with the ID of ${req.params.userId}`
+        );
 
-      let user = await User.findById(req.params.userId);
-      if(!user) return res.status(400).send(`Could not find any comments with the ID of ${req.params.userId}`)
-  
-      const post = user.post.id(req.params.postId);
-      if (!post)
-      return res.status(400).send(`There is no post.`);
-      post.likes = req.body.likes;
-      post.dislikes = req.body.dislikes;
+    const post = user.post.id(req.params.postId);
+    if (!post) return res.status(400).send(`There is no post.`);
+    post.likes = req.body.likes;
+    post.dislikes = req.body.dislikes;
 
-      await user.save();
-      return res.send(post)
-  
-  }catch (error){
-      return res.status(500).send(`internal server errror: ${error}`)
-  }
-})
-
-// follow 
-router.put("/:userId", async(req,res) => {
-  // if not same users
-  if(req.body.userId !== req.params.userId){
-
-      try{
-          const user = await User.findByIdAndUpdate(req.params.userId);
-          const currentUser = await User.findById(req.body.userId);
-          // if users' followers does not have this particular id
-          // it means it is not in users followers list, and hence can be followed
-          if(!user.friends.includes(req.body.userId)){
-              await user.updateOne({ $push: { friends: req.body.userId } });
-              await currentUser.updateOne({ $push: { friends: req.params.userId } });
-              res.status(200).send("User has been followed");
-          } else {
-              res.status(403).send("You already followed this user!");
-          }
-      } catch(err){
-          res.status(500).send(err)
-      }
-  } else {
-      res.status(403)("You cannot follow yourself!");
+    await user.save();
+    return res.send(post);
+  } catch (error) {
+    return res.status(500).send(`internal server errror: ${error}`);
   }
 });
 
-// unfollow 
-router.put("/:userId/unfollow", async(req, res) => {
+// follow
+router.put("/:userId", async (req, res) => {
   // if not same users
-  if(req.body.userId !== req.params.userId){
-
-      try{
-          const user = await User.findByIdAndUpdate(req.params.userId);
-          const currentUser = await User.findById(req.body.userId);
-          if(user.friends.includes(req.body.userId)){
-              await user.updateOne({ $pull: { friends: req.body.userId } });
-              await currentUser.updateOne({ $pull: { friends: req.params.userId } });
-              res.status(200).send("User has been unfollowed!");
-          } else{
-              res.status(403).send("You already unfollowed this user!");
-          }
-      } catch(err){
-          res.status(500).send(err);
+  if (req.body.userId !== req.params.userId) {
+    try {
+      const user = await User.findByIdAndUpdate(req.params.userId);
+      const currentUser = await User.findById(req.body.userId);
+      // if users' followers does not have this particular id
+      // it means it is not in users followers list, and hence can be followed
+      if (!user.friends.includes(req.body.userId)) {
+        await user.updateOne({ $push: { friends: req.body.userId } });
+        await currentUser.updateOne({ $push: { friends: req.params.userId } });
+        res.status(200).send("User has been followed");
+      } else {
+        res.status(403).send("You already followed this user!");
       }
+    } catch (err) {
+      res.status(500).send(err);
+    }
   } else {
-      res.status(403)("You cannot unfollow yourself!");
+    res.status(403)("You cannot follow yourself!");
+  }
+});
+
+// unfollow
+router.put("/:userId/unfollow", async (req, res) => {
+  // if not same users
+  if (req.body.userId !== req.params.userId) {
+    try {
+      const user = await User.findByIdAndUpdate(req.params.userId);
+      const currentUser = await User.findById(req.body.userId);
+      if (user.friends.includes(req.body.userId)) {
+        await user.updateOne({ $pull: { friends: req.body.userId } });
+        await currentUser.updateOne({ $pull: { friends: req.params.userId } });
+        res.status(200).send("User has been unfollowed!");
+      } else {
+        res.status(403).send("You already unfollowed this user!");
+      }
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  } else {
+    res.status(403)("You cannot unfollow yourself!");
   }
 });
 

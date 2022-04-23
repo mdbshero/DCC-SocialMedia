@@ -259,13 +259,14 @@ router.put("/:userId/pending", async (req, res) => {
 router.delete("/:userId/decline/:requestId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
+    console.log(user.pendingFriends[0]);
     for (let i = 0; i < user.pendingFriends.length; i++) {
-      console.log(user.pendingFriends[i]);
+      console.log(user.pendingFriends[i].toString());
       console.log(req.params.requestId);
 
-      if (user.pendingFriends[i] == req.params.requestId) {
-        user.pendingFriends[i].remove();console.log("trigger")
-        await user.save();
+      if (user.pendingFriends[i].toString() === req.params.requestId) {
+        console.log("trigger")
+        await user.updateOne({ $pull: { pendingFriends: req.params.requestId } });
         return res.status(200).send("The request has been declined!");
       }
     }

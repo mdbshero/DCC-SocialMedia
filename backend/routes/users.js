@@ -221,21 +221,62 @@ router.put("/:userId/unfollow", async (req, res) => {
   }
 });
 
-// Pending Friend Reqest
-router.put("/:userId/pending", [auth], async (req, res) => {
+// // Pending Friend Reqest
+// router.put("/:userId/pending", [auth], async (req, res) => {
+//   try {
+//     const requestedUser = await User.findById(req.params.userId);
+//     if (!requestedUser)
+//       return res
+//         .status(400)
+//         .send(`User with id ${req.params.userId} does not exist!`);
+//     await requestedUser.UpdateOne({ $push:{ pendingFriends: req.body.userId } });
+//     return res.status(200).send("Request sent.");
+//   } catch (error) {
+//     return res.status(500).send(`Internal Server Error: ${error}`);
+//   }
+// });
+
+// Pending friend request
+router.put("/:userId/pending", async (req, res) => {
+  // if not same users
+  if (req.body.userId !== req.params.userId) {
+    try {
+      const requestedUser = await User.findByIdAndUpdate(req.params.userId);
+      const currentUser = await User.findById(req.body.userId);
+      // if users' followers does not have this particular id
+      // it means it is not in users followers list, and hence can be followed
+      if (!requestedUser.friends.includes(req.body.userId)) {
+        await requestedUser.updateOne({ $push: { pendingFriends: req.body.userId } });
+        res.status(200).send("User has been followed");
+      } else {
+        res.status(403).send("You already followed this user!");
+      }
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  } else {
+    res.status(403)("You cannot follow yourself!");
+  }
+});
+
+// decline a friend request
+router.delete("/:userId/decline/:requestId", async (req, res) => {
   try {
-    const requestedUser = await User.findById(req.params.userId);
-    if (!requestedUser)
-      return res
-        .status(400)
-        .send(`User with id ${req.params.userId} does not exist!`);
-    let pendingFriends = await User.findByIdAndUpdate(
-      req.params.userId,
-      req.body
-    );
-    return res.send(pendingFriends);
-  } catch (error) {
-    return res.status(500).send(`Internal Server Error: ${error}`);
+    const user = await User.findById(req.params.userId);
+    console.log(user.pendingFriends[0]);
+    for (let i = 0; i < user.pendingFriends.length; i++) {
+      console.log(user.pendingFriends[i].toString());
+      console.log(req.params.requestId);
+
+      if (user.pendingFriends[i].toString() === req.params.requestId) {
+        console.log("trigger")
+        await user.updateOne({ $pull: { pendingFriends: req.params.requestId } });
+        return res.status(200).send("The request has been declined!");
+      }
+    }
+    return res.status(400).send("This request does not exist");
+  } catch (err) {
+    res.status(500).send(err);
   }
 });
 

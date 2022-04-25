@@ -76,6 +76,17 @@ router.get("/", [auth], async (req, res) => {
   }
 });
 
+//GET User by Id
+router.get("/:userId", async (req, res) =>{
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users)    
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`)    
+  }
+});
+
+
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
   try {
@@ -120,7 +131,11 @@ router.delete("/:userId/deletePost/:postId", async (req, res) => {
     for (let i = 0; i < user.post.length; i++) {
       console.log(user.post[i]._id);
       console.log(req.params.postId);
-
+      // if (!user.post[i]._id) {
+      // return res
+      //   .status(400)
+      //   .send(`Post with Id of ${req.params.postId} does not exist!`);
+      // }
       if (user.post[i]._id == req.params.postId) {
         user.post[i].remove();console.log("trigger")
         await user.save();
@@ -171,7 +186,7 @@ router.put("/:userId/post/:postId", async (req, res) => {
   }
 });
 
-// accept friend request
+// follow
 router.put("/:userId", async (req, res) => {
   // if not same users
   if (req.body.userId !== req.params.userId) {
@@ -214,21 +229,6 @@ router.put("/:userId/unfollow", async (req, res) => {
     }
   } else {
     res.status(403)("You cannot unfollow yourself!");
-  }
-});
-
-// Pending Friend Reqest
-router.put("/:userId/pending", [auth], async (req, res) => {
-  try {
-    const requestedUser = await User.findById(req.params.userId);
-    if (!requestedUser)
-      return res
-        .status(400)
-        .send(`User with id ${req.params.userId} does not exist!`);
-    let pendingFriends = await User.findByIdAndUpdate(req.params.userId, req.body);
-    return res.send(pendingFriends);
-  } catch (error) {
-    return res.status(500).send(`Internal Server Error: ${error}`);
   }
 });
 

@@ -15,6 +15,18 @@ const Navbar = () => {
             <b>SOCIAL MEDIA</b>
           </Link>
         </li>
+        <body>
+            <nav class="navbar">
+                <div class="max-width">
+                    <ul class="menu">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Profile</a></li>
+                        <li><a href="#">Friends</a></li>
+                        <li><a href="#">Posts</a></li>
+                    </ul>
+                </div>
+            </nav>
+         </body>
         <li>
           {user ? (
             <button onClick={logoutUser}>Logout</button>

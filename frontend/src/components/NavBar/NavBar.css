@@ -16,6 +16,31 @@ li {
   padding: 1.5rem 2rem;
 }
 
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.max-width{
+  max-width: 1700px;
+  padding: 1em 80px;
+  margin: auto;
+}
+
+
+.navbar .menu li a{
+  color: rgb(255, 255, 255);
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 25px;
+  transition: color 0.3s ease;
+}
+.navbar .menu li a:hover{
+  color: black;
+}
+
 .navBar button {
   background: transparent;
   border: 2px solid white;

@@ -6,10 +6,11 @@ const admin = require("../middleware/admin");
 const bcrypt = require("bcrypt");
 const express = require("express");
 const { Post } = require("../models/post");
+const fileUpload = require("../middleware/file-upload");
 const router = express.Router();
 
 //* POST register a new user
-router.post("/register", async (req, res) => {
+router.post("/register", fileUpload.single("image"), async (req, res) => {
   try {
     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
@@ -24,6 +25,7 @@ router.post("/register", async (req, res) => {
       email: req.body.email,
       password: await bcrypt.hash(req.body.password, salt),
       isAdmin: req.body.isAdmin,
+      image: req.file.path,
     });
 
     await user.save();
@@ -36,6 +38,7 @@ router.post("/register", async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        image: user.image,
       });
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -75,8 +78,6 @@ router.get("/", [auth], async (req, res) => {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
-
-
 
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
@@ -132,9 +133,14 @@ router.delete("/:userId/deletePost/:postId", async (req, res) => {
     for (let i = 0; i < user.post.length; i++) {
       console.log(user.post[i]._id);
       console.log(req.params.postId);
-
+      // if (!user.post[i]._id) {
+      // return res
+      //   .status(400)
+      //   .send(`Post with Id of ${req.params.postId} does not exist!`);
+      // }
       if (user.post[i]._id == req.params.postId) {
-        user.post[i].remove();console.log("trigger")
+        user.post[i].remove();
+        console.log("trigger");
         await user.save();
         return res.status(200).send("The post has been deleted!");
       }
@@ -183,7 +189,7 @@ router.put("/:userId/post/:postId", async (req, res) => {
   }
 });
 
-// accept friend request
+// follow
 router.put("/:userId", async (req, res) => {
   // if not same users
   if (req.body.userId !== req.params.userId) {
@@ -243,7 +249,6 @@ router.put("/:userId/unfollow", async (req, res) => {
 //     return res.status(500).send(`Internal Server Error: ${error}`);
 //   }
 // });
-
 // Pending friend request
 router.put("/:userId/pending", async (req, res) => {
   // if not same users
@@ -287,5 +292,4 @@ router.delete("/:userId/decline/:requestId", async (req, res) => {
     res.status(500).send(err);
   }
 });
-
 module.exports = router;

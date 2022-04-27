@@ -90,6 +90,36 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+//get all posts
+router.get("/:userId/posts", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users.post);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+//get all friends
+router.get("/:userId/friends", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users.friends);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+//get all pending friends
+router.get("/:userId/pendingfriends", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users.pendingFriends);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
   try {

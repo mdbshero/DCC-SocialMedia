@@ -11,10 +11,10 @@ const router = express.Router();
 
 //* POST register a new user
 router.post("/register", fileUpload.single("image"), async (req, res) => {
+  console.log(req.body);
   try {
     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-
     let user = await User.findOne({ email: req.body.email });
     if (user)
       return res.status(400).send(`Email ${req.body.email} already claimed!`);
@@ -80,15 +80,14 @@ router.get("/", [auth], async (req, res) => {
 });
 
 //GET User by Id
-router.get("/:userId", async (req, res) =>{
+router.get("/:userId", async (req, res) => {
   try {
     const users = await User.findById(req.params.userId);
-    return res.send(users)    
+    return res.send(users);
   } catch (error) {
-    return res.status(500).send(`Internal Server Error: ${error}`)    
+    return res.status(500).send(`Internal Server Error: ${error}`);
   }
 });
-
 
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
@@ -260,7 +259,9 @@ router.put("/:userId/pending", async (req, res) => {
       // if users' followers does not have this particular id
       // it means it is not in users followers list, and hence can be followed
       if (!requestedUser.friends.includes(req.body.userId)) {
-        await requestedUser.updateOne({ $push: { pendingFriends: req.body.userId } });
+        await requestedUser.updateOne({
+          $push: { pendingFriends: req.body.userId },
+        });
         res.status(200).send("User has been followed");
       } else {
         res.status(403).send("You already followed this user!");
@@ -283,8 +284,10 @@ router.delete("/:userId/decline/:requestId", async (req, res) => {
       console.log(req.params.requestId);
 
       if (user.pendingFriends[i].toString() === req.params.requestId) {
-        console.log("trigger")
-        await user.updateOne({ $pull: { pendingFriends: req.params.requestId } });
+        console.log("trigger");
+        await user.updateOne({
+          $pull: { pendingFriends: req.params.requestId },
+        });
         return res.status(200).send("The request has been declined!");
       }
     }

@@ -79,6 +79,7 @@ router.get("/", [auth], async (req, res) => {
   }
 });
 
+
 //GET User by Id
 router.get("/:userId", async (req, res) => {
   try {
@@ -104,9 +105,19 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
   }
 });
 
+//GET User by Id
+router.get("/:userId", [auth], async (req, res) =>{
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users)    
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`)    
+  }
+});
+
 //put user post
 //http://localhost:3011/api/users/
-router.put("/:userId/newPost", [auth], async (req, res) => {
+router.put("/:userId/newPost", async (req, res) => {
   try {
     let post = await User.findById(req.params.userId);
     if (!post)

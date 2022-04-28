@@ -6,14 +6,15 @@ const admin = require("../middleware/admin");
 const bcrypt = require("bcrypt");
 const express = require("express");
 const { Post } = require("../models/post");
+const fileUpload = require("../middleware/file-upload");
 const router = express.Router();
 
 //* POST register a new user
-router.post("/register", async (req, res) => {
+router.post("/register", fileUpload.single("image"), async (req, res) => {
+  console.log(req.body);
   try {
     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
-
     let user = await User.findOne({ email: req.body.email });
     if (user)
       return res.status(400).send(`Email ${req.body.email} already claimed!`);
@@ -24,6 +25,7 @@ router.post("/register", async (req, res) => {
       email: req.body.email,
       password: await bcrypt.hash(req.body.password, salt),
       isAdmin: req.body.isAdmin,
+      image: req.file.path,
     });
 
     await user.save();
@@ -36,6 +38,7 @@ router.post("/register", async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        image: user.image,
       });
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
@@ -78,6 +81,47 @@ router.get("/", [auth], async (req, res) => {
 
 
 
+//GET User by Id
+router.get("/:userId", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+//get all posts
+router.get("/:userId/posts", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users.post);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+//get all friends
+router.get("/:userId/friends", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users.friends);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+//get all pending friends
+router.get("/:userId/pendingfriends", async (req, res) => {
+  try {
+    const users = await User.findById(req.params.userId);
+    return res.send(users.pendingFriends);
+  } catch (error) {
+    return res.status(500).send(`Internal Server Error: ${error}`);
+  }
+});
+
+
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
   try {
@@ -95,6 +139,7 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
 
 //GET User by Id
 router.get("/:userId", async (req, res) =>{
+
   try {
     const users = await User.findById(req.params.userId);
     return res.send(users)    
@@ -132,9 +177,14 @@ router.delete("/:userId/deletePost/:postId", async (req, res) => {
     for (let i = 0; i < user.post.length; i++) {
       console.log(user.post[i]._id);
       console.log(req.params.postId);
-
+      // if (!user.post[i]._id) {
+      // return res
+      //   .status(400)
+      //   .send(`Post with Id of ${req.params.postId} does not exist!`);
+      // }
       if (user.post[i]._id == req.params.postId) {
-        user.post[i].remove();console.log("trigger")
+        user.post[i].remove();
+        console.log("trigger");
         await user.save();
         return res.status(200).send("The post has been deleted!");
       }
@@ -183,7 +233,7 @@ router.put("/:userId/post/:postId", async (req, res) => {
   }
 });
 
-// accept friend request
+// follow
 router.put("/:userId", async (req, res) => {
   // if not same users
   if (req.body.userId !== req.params.userId) {
@@ -243,7 +293,6 @@ router.put("/:userId/unfollow", async (req, res) => {
 //     return res.status(500).send(`Internal Server Error: ${error}`);
 //   }
 // });
-
 // Pending friend request
 router.put("/:userId/pending", async (req, res) => {
   // if not same users
@@ -254,7 +303,9 @@ router.put("/:userId/pending", async (req, res) => {
       // if users' followers does not have this particular id
       // it means it is not in users followers list, and hence can be followed
       if (!requestedUser.friends.includes(req.body.userId)) {
-        await requestedUser.updateOne({ $push: { pendingFriends: req.body.userId } });
+        await requestedUser.updateOne({
+          $push: { pendingFriends: req.body.userId },
+        });
         res.status(200).send("User has been followed");
       } else {
         res.status(403).send("You already followed this user!");
@@ -277,8 +328,10 @@ router.delete("/:userId/decline/:requestId", async (req, res) => {
       console.log(req.params.requestId);
 
       if (user.pendingFriends[i].toString() === req.params.requestId) {
-        console.log("trigger")
-        await user.updateOne({ $pull: { pendingFriends: req.params.requestId } });
+        console.log("trigger");
+        await user.updateOne({
+          $pull: { pendingFriends: req.params.requestId },
+        });
         return res.status(200).send("The request has been declined!");
       }
     }
@@ -287,5 +340,4 @@ router.delete("/:userId/decline/:requestId", async (req, res) => {
     res.status(500).send(err);
   }
 });
-
 module.exports = router;

@@ -27,7 +27,7 @@ const FriendsPage = () => {
       await axios
         .get(`http://localhost:3011/api/users/${userFriends[i]}`)
         .then((response) =>
-          setFriends((friends) => [...friends, response.data.name])
+          setFriends((friends) => [...friends, response.data])
         );
     }
   }
@@ -39,11 +39,15 @@ const FriendsPage = () => {
       await axios
         .get(`http://localhost:3011/api/users/${userPending[i]}`)
         .then((response) =>
-          setPending((pending) => [...pending, response.data.name])
+          setPending((pending) => [...pending, response.data])
         );
     }
   }
 
+  // async function handleClickUnfollow(){
+  //   let mainUser = user._id;
+  //   let unfollowUser = 
+  // }
   useEffect(() => {
     getUserFriendInfo();
   }, []);
@@ -74,7 +78,7 @@ const FriendsPage = () => {
                   return (
                     <tr>
                     <td key={index}>
-                      <h5>{friend}</h5>
+                      <h5>{friend.name}</h5>
                     </td>
                     </tr>
                   );
@@ -95,7 +99,7 @@ const FriendsPage = () => {
                   return (
                     <tr>
                     <td key={index}>
-                      <h5>{e}</h5>
+                      <h5>{e.name}</h5>
                     </td>
                     </tr>
                   );

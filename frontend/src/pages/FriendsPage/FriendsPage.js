@@ -44,10 +44,19 @@ const FriendsPage = () => {
     }
   }
 
-  // async function handleClickUnfollow(){
-  //   let mainUser = user._id;
-  //   let unfollowUser = 
-  // }
+  async function handleClickUnfollow(event, unfollowed){
+    event.preventDefault();
+    let mainUser = user._id;
+    unfollowed = {
+      userId: unfollowed._id
+    };
+    console.log(unfollowed)
+    await axios
+    .put(`http://localhost:3011/api/users/${mainUser}/unfollow`, unfollowed)
+    .then(() => {
+      getUserFriendInfo();
+    })
+  }
   useEffect(() => {
     getUserFriendInfo();
   }, []);
@@ -78,7 +87,10 @@ const FriendsPage = () => {
                   return (
                     <tr>
                     <td key={index}>
-                      <h5>{friend.name}</h5>
+                      <h5>{friend._id}</h5>
+                      <div>
+                        <button type="submit" id="deleteFriendButton" onClick={(event) => handleClickUnfollow(event, friend)}>Delete</button>
+                      </div>
                     </td>
                     </tr>
                   );
@@ -100,6 +112,9 @@ const FriendsPage = () => {
                     <tr>
                     <td key={index}>
                       <h5>{e.name}</h5>
+                      <div>
+                        <button type="submit" id="deleteFriendButton">Delete</button>
+                      </div>
                     </td>
                     </tr>
                   );

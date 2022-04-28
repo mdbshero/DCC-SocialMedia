@@ -65,7 +65,6 @@ const FriendsPage = () => {
           <thead>
             <tr>
               <th>Friends</th>
-              <th>Pending Friends</th>
             </tr>
           </thead>
           <tbody>
@@ -73,17 +72,32 @@ const FriendsPage = () => {
               {friends &&
                 friends.map((friend, index) => {
                   return (
+                    <tr>
                     <td key={index}>
                       <h5>{friend}</h5>
                     </td>
+                    </tr>
                   );
                 })}
-              {pending &&
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Pending Friends</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+            {pending &&
                 pending.map((e, index) => {
                   return (
+                    <tr>
                     <td key={index}>
                       <h5>{e}</h5>
                     </td>
+                    </tr>
                   );
                 })}
             </tr>

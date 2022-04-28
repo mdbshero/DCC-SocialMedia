@@ -16,18 +16,17 @@ const FriendsPage = () => {
     console.log(userInfo.data.friends);
     console.log(userInfo.data.pending);
     setUserFriends(userInfo.data.friends);
-    setUserPending(userInfo.data.pendingFriends)
+    setUserPending(userInfo.data.pendingFriends);
   }
-
 
   async function getFriendInfo() {
     //console.log(`testing`, userFriends)
     for (let i = 0; i < userFriends.length; i++) {
-      console.log(`userFullf:`, userFriends[i])
+      console.log(`userFullf:`, userFriends[i]);
       await axios
         .get(`http://localhost:3011/api/users/${userFriends[i]}`)
         .then((response) =>
-          setFriends((friends) => [...friends, response.data])
+          setFriends((friends) => [...friends, response.data]),
         );
     }
   }
@@ -35,7 +34,7 @@ const FriendsPage = () => {
   async function getPendingFriendInfo() {
     //console.log(`testing`, userFriends)
     for (let i = 0; i < userPending.length; i++) {
-      console.log(`userFullp:`, userPending[i])
+      //console.log(`userFullp:`, userPending[i]);
       await axios
         .get(`http://localhost:3011/api/users/${userPending[i]}`)
         .then((response) =>
@@ -44,19 +43,41 @@ const FriendsPage = () => {
     }
   }
 
-  async function handleClickUnfollow(event, unfollowed){
+  async function handleClickUnfollow(event, unfollowed) {
     event.preventDefault();
     let mainUser = user._id;
     unfollowed = {
-      userId: unfollowed._id
+      userId: unfollowed._id,
     };
-    console.log(unfollowed)
-    await axios
-    .put(`http://localhost:3011/api/users/${mainUser}/unfollow`, unfollowed)
-    .then(() => {
-      getUserFriendInfo();
-    })
+    //console.log(unfollowed);
+    await axios.put(
+      `http://localhost:3011/api/users/${mainUser}/unfollow`,
+      unfollowed
+    );
   }
+
+  async function handleClickDecline(event, declined) {
+    event.preventDefault();
+    let mainUser = user._id;
+    console.log(declined._id);
+    await axios.delete(
+      `http://localhost:3011/api/users/${mainUser}/decline/${declined._id}`
+    );
+  }
+
+  async function handleClickAccept(event, accepted) {
+    event.preventDefault();
+    let mainUser = user._id;
+    accepted = {
+      userId: accepted._id,
+    };
+    //console.log(unfollowed);
+    await axios.put(
+      `http://localhost:3011/api/users/${mainUser}`,
+      accepted
+    )
+  }
+
   useEffect(() => {
     getUserFriendInfo();
   }, []);
@@ -86,12 +107,20 @@ const FriendsPage = () => {
                 friends.map((friend, index) => {
                   return (
                     <tr>
-                    <td key={index}>
-                      <h5>{friend._id}</h5>
-                      <div>
-                        <button type="submit" id="deleteFriendButton" onClick={(event) => handleClickUnfollow(event, friend)}>Delete</button>
-                      </div>
-                    </td>
+                      <td key={index}>
+                        <h5>{friend.name}</h5>
+                        <div>
+                          <button
+                            type="submit"
+                            id="deleteFriendButton"
+                            onClick={(event) =>
+                              handleClickUnfollow(event, friend)
+                            }
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -106,16 +135,29 @@ const FriendsPage = () => {
           </thead>
           <tbody>
             <tr>
-            {pending &&
+              {pending &&
                 pending.map((e, index) => {
                   return (
                     <tr>
-                    <td key={index}>
-                      <h5>{e.name}</h5>
-                      <div>
-                        <button type="submit" id="deleteFriendButton">Delete</button>
-                      </div>
-                    </td>
+                      <td key={index}>
+                        <h5>{e.name}</h5>
+                        <div>
+                          <button
+                            type="delete"
+                            id="declinePendingButton"
+                            onClick={(event) => handleClickAccept(event, e)}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            type="delete"
+                            id="declinePendingButton"
+                            onClick={(event) => handleClickDecline(event, e)}
+                          >
+                            Decline
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}

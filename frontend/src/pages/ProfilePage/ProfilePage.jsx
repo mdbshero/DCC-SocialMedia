@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
+import "bootstrap"
+
 
 const Profile = (props) => {
 
@@ -63,17 +65,18 @@ const Profile = (props) => {
           <p className="p-2">{about}</p>
         </div>
       </div>
-      <div className="w-100 mt-3">
-        <h3 className="text-center">Posts</h3>
+      <div class="card mb-3">
+        <h3 className="card_body">Posts</h3>
         {allPosts &&
           allPosts.map((post, i) => {
             return (
-              <div key={i} className="list-group-item mb-3 ml-0 w-100 p-0">
+              <div key={i} className="card mb-3">
                 <div className="d-flex bg-primary text-white p-2">
                   <h5 className="w-75">Posted {post.dateAdded}</h5>
                 </div>
                 <p className="msgtxt p-3">{post.post} </p>
               </div>
+              
             );
           })}
       </div>

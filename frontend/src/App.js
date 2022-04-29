@@ -40,6 +40,8 @@ function App() {
           <PrivateRoute>
             <ProfilePage/>
                     </PrivateRoute>
+                  }
+        />
         <Route path="/friends" element={
           <PrivateRoute>
             <FriendsPage/>

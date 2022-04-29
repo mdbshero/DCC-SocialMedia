@@ -9,55 +9,87 @@ const HomePage = (props) => {
   const [friends, setFriends] = useState([]);
   const [userFriends, setUserFriends] = useState([]);
 
-  async function getFriends () {
+  async function getFriends() {
     console.log(user._id);
-    let response = await axios.get(`http://localhost:3011/api/users/${user._id}/friends`,);
-        console.log(response.data.friends);
-        setUserFriends (response.data.friends);
-    };
-    async function getFriendPosts() {
-        for (let i = 0; i < userFriends.length; i++) {
-          console.log(`userFullf:`, userFriends[i])
-          await axios
-            .get(`http://localhost:3011/api/users/${userFriends[i]}`)
-            .then((response) =>
-              setFriends((friends) => [...friends, response.data]),
-              console.log(friends)
-            );
-        }
-      }
+    let response = await axios.get(
+      `http://localhost:3011/api/users/${user._id}`
+    );
+    console.log(response.data.friends);
+    setUserFriends(response.data.friends);
+  }
+  async function getFriendPosts() {
+    for (let i = 0; i < userFriends.length; i++) {
+      console.log(`userFullf:`, userFriends[i]);
+      await axios
+        .get(`http://localhost:3011/api/users/${userFriends[i]}/posts`)
+        .then(
+          (response) => setFriends((friends) => [...friends, response.data])
+        );
+    }
+  }
 
+  const flatArray = friends.flatMap(item => item);
+  console.log("flat", flatArray)
 
-    useEffect(() => {
-		getFriends();
-    },[])
+  const convertDate = flatArray.map(item => 
+      ({...item,
+      sortDate : new Date(item.dateAdded)
+      })
+  // console.log( new Date(item.dateAdded));
+   // item.dateAdded = Date.parse(item.dateAdded)
+  ).sort((date1, date2) => date2.sortDate - date1.sortDate);
+  console.log(convertDate)
 
-    useEffect(() => {
-        getFriendPosts();
-      }, [userFriends]);
+  useEffect(() => {
+    getFriends();
+  }, []);
 
-return (
+  useEffect(() => {
+    getFriendPosts();
+    console.log(friends);
+  }, [userFriends]);
 
-//   <div
-//  <h1 className="container">Home Page for {user.name}!</h1>;
-//   </div>
+  return (
+    //   <div>
+    //  <h1 className="container">Home Page for {user.name}!</h
+    //   </div>
+    <table>
+      <thead>
+        <tr>
+          <td>Friends Posts</td>
+        </tr>
+      </thead>
+      <tbody>
+          {convertDate &&
+            convertDate.map((f, i) => {
+              return (
+                  <tr>
+                  <td key={i}>
+                    <h5>{f.post}</h5>
+                  </td>
+                  </tr>
+                  )
+                })
+            }
+      </tbody>
+    </table>
 
-  <div className ="w-100 mt-3">
-        <h3 className="text-center">Friends Posts</h3>
-        {friends && friends.map((friend,i) => { 
-            return (
-                <div key= {i} className="list-group-item mb-3 ml-0 w-100 p-0">
-                    <div className="d-flex bg-primary text-white p-2">
-                    <h5 className="w-75"> {friend.post}</h5>
-                    </div>
-                    {/* <p className="msgtxt p-3">{post.post} </p> */}
-                                                  
-                                                    
-                </div>                
-            )}
-        )}
-    </div>
+    // <div>
+    //   <h3>Friends Posts</h3>
+    //   {friends &&
+    //     friends.map((friend, i) => {
+    //       return (
+    //         <div key={i}>
+    //           <div>
+    //             <h5> {friend.likes}</h5>
+    //           </div>
+    //           {/* <p className="msgtxt p-3">{post.post} </p> */}
+    //         </div>
+    //       );
+    //     })}
+    // </div>
+  );
+};
 
-)};
 
 export default HomePage;

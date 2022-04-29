@@ -4,6 +4,7 @@ import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
 const Profile = (props) => {
+
   const [post, setPosts] = useState([]);
   const { user } = useContext(AuthContext);
   const [allPosts, setAllPosts] = useState([]);

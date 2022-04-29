@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import PostPage from "./pages/PostPage/PostPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage"
 
 // Component Imports
@@ -34,6 +35,11 @@ function App() {
           </PrivateRoute>
         }
         />
+
+        <Route path="/profile" element={
+          <PrivateRoute>
+            <ProfilePage/>
+                    </PrivateRoute>
         <Route path="/friends" element={
           <PrivateRoute>
             <FriendsPage/>

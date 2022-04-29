@@ -4,11 +4,11 @@ import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
 const Profile = (props) => {
-
   const [post, setPosts] = useState([]);
   const { user } = useContext(AuthContext);
   const [allPosts, setAllPosts] = useState([]);
   const [about, setAbout] = useState("");
+  const [image, setImage] = useState("");
 
   async function getUserAboutMeInfo() {
     let userInfo = await axios.get(
@@ -17,6 +17,7 @@ const Profile = (props) => {
     //console.log(userInfo.data.friends);
     console.log(userInfo.data.aboutMe);
     setAbout(userInfo.data.aboutMe);
+    setImage(userInfo.data.image);
   }
 
   async function handleSubmit(event) {
@@ -46,8 +47,11 @@ const Profile = (props) => {
     getUserAboutMeInfo();
     getPosts();
   }, []);
+
+  console.log(`image`, image);
   return (
     <div>
+      <img src={`http://localhost:3011/${image}`}></img>
       <form id="AboutMe" onSubmit={handleSubmit}>
         <label>About me:</label>
         <textarea

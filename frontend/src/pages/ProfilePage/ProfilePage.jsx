@@ -12,24 +12,24 @@ const Profile = (props) => {
 
     async function handleSubmit (event) {
         event.preventDefault();
-        console.log (about)
+        
         let newAboutMe = await axios.put(`http://localhost:3011/api/users/${user._id}/aboutMe/`, {  
         "aboutMe" : about,    
     })
-    console.log(newAboutMe);
+    
     setAbout("");
-    // document.getElementById("AboutMe").about.value="";
-
+    console.log(newAboutMe);
+}
     // useEffect(() => {
     //     handleSubmit();
     // },[user._id])
    
-}
+
 async function getPosts () {
     console.log(user._id)
     let response = await axios.get(`http://localhost:3011/api/users/${user._id}/posts/`,)
-        console.log(response.data);
-        setAllPosts (response.data);
+       setAllPosts (response.data);
+       console.log(response.data);
     }
     useEffect(() => {
 		getPosts();

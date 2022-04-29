@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
+import LikeDislike from "../../components/LikeDislikes/LikeDislikes";
 
 const HomePage = (props) => {
   const { user } = useContext(AuthContext);
@@ -66,6 +67,7 @@ const HomePage = (props) => {
                   <tr>
                   <td key={i}>
                     <h5>{f.post}</h5>
+                    <LikeDislike postId={f._id} like={f.likes} dislikes={f.dislikes} getFriendPosts={getFriendPosts}/>
                   </td>
                   </tr>
                   )

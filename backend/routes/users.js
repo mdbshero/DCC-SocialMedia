@@ -80,6 +80,7 @@ router.get("/", [auth], async (req, res) => {
 });
 
 
+
 //GET User by Id
 router.get("/:userId", async (req, res) => {
   try {
@@ -120,6 +121,7 @@ router.get("/:userId/pendingfriends", async (req, res) => {
   }
 });
 
+
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
   try {
@@ -136,7 +138,9 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
 });
 
 //GET User by Id
-router.get("/:userId", [auth], async (req, res) =>{
+
+router.get("/:userId", async (req, res) =>{
+
   try {
     const users = await User.findById(req.params.userId);
     return res.send(users)    
@@ -147,7 +151,7 @@ router.get("/:userId", [auth], async (req, res) =>{
 
 //put user post
 //http://localhost:3011/api/users/
-router.put("/:userId/newPost", async (req, res) => {
+router.put("/:userId/newPost",  async (req, res) => {
   try {
     let post = await User.findById(req.params.userId);
     if (!post)
@@ -242,6 +246,7 @@ router.put("/:userId", async (req, res) => {
       if (!user.friends.includes(req.body.userId)) {
         await user.updateOne({ $push: { friends: req.body.userId } });
         await currentUser.updateOne({ $push: { friends: req.params.userId } });
+        await user.updateOne({ $pull: { pendingFriends: req.body.userId} })
         res.status(200).send("User has been followed");
       } else {
         res.status(403).send("You already followed this user!");
@@ -303,7 +308,7 @@ router.put("/:userId/pending", async (req, res) => {
         await requestedUser.updateOne({
           $push: { pendingFriends: req.body.userId },
         });
-        res.status(200).send("User has been followed");
+        res.status(200).send("Request has been sent.");
       } else {
         res.status(403).send("You already followed this user!");
       }

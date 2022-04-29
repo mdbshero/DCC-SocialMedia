@@ -138,6 +138,7 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
 });
 
 //GET User by Id
+
 router.get("/:userId", async (req, res) =>{
 
   try {

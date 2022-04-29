@@ -80,6 +80,7 @@ router.get("/", [auth], async (req, res) => {
 });
 
 
+
 //GET User by Id
 router.get("/:userId", async (req, res) => {
   try {
@@ -120,6 +121,7 @@ router.get("/:userId/pendingfriends", async (req, res) => {
   }
 });
 
+
 // DELETE a single user from the database
 router.delete("/:userId", [auth, admin], async (req, res) => {
   try {
@@ -149,9 +151,7 @@ router.get("/:userId", async (req, res) =>{
 
 //put user post
 //http://localhost:3011/api/users/
-
 router.put("/:userId/newPost",  async (req, res) => {
-
   try {
     let post = await User.findById(req.params.userId);
     if (!post)

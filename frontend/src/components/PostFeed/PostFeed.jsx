@@ -10,6 +10,7 @@ const PostFeed = (props) => {
         e.preventDefault();        
         let res = await axios.delete(`http://localhost:3011/api/users/${user._id}/deletePost/${_id}`); 
         console.log(res)
+        props.getUserInfo()
     };
     
 

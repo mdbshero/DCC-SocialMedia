@@ -14,6 +14,15 @@ const Navbar = () => {
           <Link to="/" style={{ textDecoration: "none", color: "white" }}>
             <b>SOCIAL MEDIA</b>
           </Link>
+        </li>        
+        <li>
+          <button onClick={() => navigate("/profile")}>Profile</button>
+        </li>
+        <li>
+          <button onClick={() => navigate("/friends")}>Friends</button>
+        </li>
+        <li>
+          <button onClick={() => navigate("/post")}>Post</button>
         </li>
         <li>
           {user ? (

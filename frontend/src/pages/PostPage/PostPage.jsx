@@ -1,17 +1,16 @@
 import axios from "axios";
+
 import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import PostFeed from "../../components/PostFeed/PostFeed";
-// import DeletePost from "../../components/DeletePost/DeletePost";
-
 
 const PostPage = (props) => {
     const { user } = useContext(AuthContext);
+
     const jwt = localStorage.getItem('token');
     const config = {'headers' : { 'Authorization' : `Bearer ${jwt}`}};
-    const [userData, setUserData] = useState([]);
-    
+    const [userData, setUserData] = useState([]);    
     async function getUserInfo(){
         let userInfo = await axios.get(`http://localhost:3011/api/users/${user._id}`, config);
         console.log(userInfo.data.post)
@@ -21,18 +20,12 @@ const PostPage = (props) => {
         getUserInfo();
         },[]);
 
-   
- 
-
-
     async function handleNewPost (event) {
         event.preventDefault();        
         const post = {post: event.target.post.value};
         let res = await axios.put(`http://localhost:3011/api/users/${user._id}/newPost`, post, config); 
         console.log(res)
     };
-
-
     return (
         <div className="container">
             <div className="inputBox">
@@ -49,9 +42,7 @@ const PostPage = (props) => {
            <div>
                <PostFeed userData={userData}/>
            </div>
-            
-        </div>
-    
+        </div>    
     );
   };
  

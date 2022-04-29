@@ -16,8 +16,15 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const registerUser = async (registerData) => {
+    const form = new FormData();
+    form.append("name", registerData.name);
+    form.append("email", registerData.email);
+    form.append("password", registerData.password);
+    form.append("isAdmin", registerData.isAdmin);
+    form.append("image", registerData.image);
     try {
-      let response = await axios.post(`${BASE_URL}/register`, registerData);
+      console.log(registerData);
+      let response = await axios.post(`${BASE_URL}/register`, form);
       if (response.status === 200) {
         let token = response.headers["x-auth-token"];
         localStorage.setItem("token", JSON.stringify(token));

@@ -136,7 +136,9 @@ router.delete("/:userId", [auth, admin], async (req, res) => {
 });
 
 //GET User by Id
-router.get("/:userId", [auth], async (req, res) =>{
+
+router.get("/:userId", async (req, res) =>{
+
   try {
     const users = await User.findById(req.params.userId);
     return res.send(users)    
@@ -147,7 +149,9 @@ router.get("/:userId", [auth], async (req, res) =>{
 
 //put user post
 //http://localhost:3011/api/users/
-router.put("/:userId/newPost", async (req, res) => {
+
+router.put("/:userId/newPost",  async (req, res) => {
+
   try {
     let post = await User.findById(req.params.userId);
     if (!post)

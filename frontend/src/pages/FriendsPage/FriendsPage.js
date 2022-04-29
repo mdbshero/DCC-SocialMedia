@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
+import jwtDecode from "jwt-decode";
 
 const FriendsPage = () => {
   const [userFriends, setUserFriends] = useState();
@@ -9,12 +10,13 @@ const FriendsPage = () => {
   const [friends, setFriends] = useState([]);
   const [pending, setPending] = useState([]);
 
+
   async function getUserFriendInfo() {
     let userInfo = await axios.get(
       `http://localhost:3011/api/users/${user._id}`
     );
-    console.log(userInfo.data.friends);
-    console.log(userInfo.data.pending);
+    //console.log(userInfo.data.friends);
+    //console.log(userInfo.data.pending);
     setUserFriends(userInfo.data.friends);
     setUserPending(userInfo.data.pendingFriends);
   }
@@ -26,7 +28,7 @@ const FriendsPage = () => {
       await axios
         .get(`http://localhost:3011/api/users/${userFriends[i]}`)
         .then((response) =>
-          setFriends((friends) => [...friends, response.data]),
+          setFriends((friends) => [...friends, response.data])
         );
     }
   }
@@ -54,6 +56,7 @@ const FriendsPage = () => {
       `http://localhost:3011/api/users/${mainUser}/unfollow`,
       unfollowed
     );
+    getFriendInfo();
   }
 
   async function handleClickDecline(event, declined) {
@@ -72,10 +75,7 @@ const FriendsPage = () => {
       userId: accepted._id,
     };
     //console.log(unfollowed);
-    await axios.put(
-      `http://localhost:3011/api/users/${mainUser}`,
-      accepted
-    )
+    await axios.put(`http://localhost:3011/api/users/${mainUser}`, accepted);
   }
 
   useEffect(() => {

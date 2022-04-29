@@ -1,44 +1,53 @@
 import axios from "axios";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
+import PostFeed from "../../components/PostFeed/PostFeed";
+// import DeletePost from "../../components/DeletePost/DeletePost";
 
 
 const PostPage = (props) => {
     const { user } = useContext(AuthContext);
- 
+    const jwt = localStorage.getItem('token');
+    const config = {'headers' : { 'Authorization' : `Bearer ${jwt}`}};
+    const [userData, setUserData] = useState([]);
+    
+    async function getUserInfo(){
+        let userInfo = await axios.get(`http://localhost:3011/api/users/${user._id}`, config);
+        console.log(userInfo.data.post)
+        setUserData(userInfo.data.post)
+    }
+    useEffect(()=>{
+        getUserInfo();
+        },[]);
 
+
+    const jwt = localStorage.getItem('token');
+    const config = {'headers' : { 'Authorization' : `Bearer ${jwt}`}};
+    const [userData, setUserData] = useState([]);    
+    async function getUserInfo(){
+        let userInfo = await axios.get(`http://localhost:3011/api/users/${user._id}`, config);
+        console.log(userInfo.data.post)
+        setUserData(userInfo.data.post)
+    }
+    useEffect(()=>{
+        getUserInfo();
+        },[]);
 
     async function handleNewPost (event) {
-        event.preventDefault();
-        const jwt = localStorage.getItem('token');
-        console.log("JWT", jwt)
-        console.log("User ID", user._id)
-        // const post = {post: event.target.value}
-        // const header = {
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //       "x-auth-token": `${jwt}`,
-        //     }}
-        //     console.log("User Post", post)
-      
-        // let res = await axios.put(`http://localhost:3011/api/users/${user._id}/newPost`, {headers : {Authorization: 'Bearer '+ jwt}}
-        // );    
-        const config = {
-            'headers' : { 'Authorization' : `Bearer ${jwt}`}
-        };
+        event.preventDefault();        
         const post = {post: event.target.post.value};
-        const url = `http://localhost:3011/api/users/${user._id}/newPost`;
-        let res = await axios.put(`http://localhost:3011/api/users/${user._id}/newPost`, post,config); 
-
+        let res = await axios.put(`http://localhost:3011/api/users/${user._id}/newPost`, post, config); 
         console.log(res)
+        getUserInfo()
     };
 
     return (
         <div className="container">
-            <div className="postBox">
+            <div className="inputBox">
                 <form onSubmit={handleNewPost}>
-                    <input className="postBox"
+                    <input className="postInput"
                     type='text'
                     name="post"
                     required = "required"
@@ -46,11 +55,13 @@ const PostPage = (props) => {
                     />
                     <button type="submit">Post</button>
                 </form>
-
-
             </div>
+           <div>
+               <PostFeed userData={userData} getUserInfo = {getUserInfo}/>
+           </div>
+            
         </div>
-    
+
     );
   };
  

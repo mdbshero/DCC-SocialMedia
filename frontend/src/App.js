@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import PostPage from "./pages/PostPage/PostPage";
+import FriendsPage from "./pages/FriendsPage/FriendsPage"
 
 // Component Imports
 import Navbar from "./components/NavBar/NavBar";
@@ -30,6 +31,12 @@ function App() {
         <Route path="/post" element={
           <PrivateRoute>
             <PostPage/>
+          </PrivateRoute>
+        }
+        />
+        <Route path="/friends" element={
+          <PrivateRoute>
+            <FriendsPage/>
           </PrivateRoute>
         }
         />

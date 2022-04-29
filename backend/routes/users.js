@@ -245,6 +245,7 @@ router.put("/:userId", async (req, res) => {
       if (!user.friends.includes(req.body.userId)) {
         await user.updateOne({ $push: { friends: req.body.userId } });
         await currentUser.updateOne({ $push: { friends: req.params.userId } });
+        await user.updateOne({ $pull: { pendingFriends: req.body.userId} })
         res.status(200).send("User has been followed");
       } else {
         res.status(403).send("You already followed this user!");
@@ -306,7 +307,7 @@ router.put("/:userId/pending", async (req, res) => {
         await requestedUser.updateOne({
           $push: { pendingFriends: req.body.userId },
         });
-        res.status(200).send("User has been followed");
+        res.status(200).send("Request has been sent.");
       } else {
         res.status(403).send("You already followed this user!");
       }

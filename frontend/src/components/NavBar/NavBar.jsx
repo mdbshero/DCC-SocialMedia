@@ -12,9 +12,12 @@ const Navbar = () => {
       <ul>
         <li className="brand">
           <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-            <b>SOCIAL MEDIA</b>
+            <b>RootSocial</b>
           </Link>
         </li>        
+        <li>
+          <button onClick={() => navigate("/")}>Home</button>
+        </li>
         <li>
           <button onClick={() => navigate("/profile")}>Profile</button>
         </li>

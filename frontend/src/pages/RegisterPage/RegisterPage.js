@@ -1,6 +1,7 @@
 import React, { useContext, useRef } from "react";
 import AuthContext from "../../context/AuthContext";
 import useCustomForm from "../../hooks/useCustomForm";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const RegisterPage = () => {
   const { registerUser } = useContext(AuthContext);
@@ -46,6 +47,17 @@ const RegisterPage = () => {
             onChange={handleInputChange}
           />
         </label>
+        <label>
+          Profile Picture:{" "}
+          <input
+            type="file"
+            name="image"
+            ref={filePickerRef}
+            accept=".jpg,.jpeg,.png"
+            onChange={handleInputChange}
+            className="form-control"
+          />
+        </label>
         <label
           style={{
             display: "flex",
@@ -61,18 +73,7 @@ const RegisterPage = () => {
             onChange={handleInputChange}
           />
         </label>
-        <label>
-          Profile Picture:{" "}
-          <input
-            type="file"
-            name="image"
-            ref={filePickerRef}
-            accept=".jpg,.jpeg,.png"
-
-            onChange={handleInputChange}
-          />
-        </label>
-        <button>Register!</button>
+        <button className="btn btn-success">Register!</button>
       </form>
     </div>
   );

@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import PostPage from "./pages/PostPage/PostPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage"
+import bootstrap from "bootstrap"
 
 // Component Imports
 import Navbar from "./components/NavBar/NavBar";
@@ -23,6 +24,7 @@ function App() {
   return (
     <div>
       <Navbar />
+      <body>
       <Routes>
         <Route path="/" element={
         <PrivateRoute>
@@ -52,6 +54,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
+      </body>
       <Footer />
     </div>
   );

@@ -44,7 +44,7 @@ const PostFeed = (props) => {
                     //     <p>{userData.post}</p>
                     // </div>
                 );
-            })};
+            })}
         </div>
      );
 }

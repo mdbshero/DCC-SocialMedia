@@ -2,7 +2,10 @@ const mongoose = require("mongoose")
 const Joi = require("joi");
 const { string, number } = require("joi");
 
+
 const postSchema = new mongoose.Schema({
+    name: {type: String, default: ""},
+    uID: {type: String, default: ""},
     post: {type: String, required: true, minlength: 1, maxlength: 420},
     likes: {type: Number, default: 0},
     dislikes: {type: Number, default: 0},

@@ -23,8 +23,13 @@ const PostPage = (props) => {
         },[]);
 
     async function handleNewPost (event) {
-        event.preventDefault();        
-        const post = {post: event.target.post.value};
+        event.preventDefault(); 
+        console.log(user.name)       
+        const post = {
+            name: user.name,
+            uID: user._id,
+            post: event.target.post.value
+        };
         let res = await axios.put(`http://localhost:3011/api/users/${user._id}/newPost`, post, config); 
         console.log(res)
         getUserInfo()

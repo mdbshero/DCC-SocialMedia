@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
-import "bootstrap"
+
 
 
 const Profile = (props) => {
@@ -17,7 +17,7 @@ const Profile = (props) => {
       `http://localhost:3011/api/users/${user._id}`
     );
     //console.log(userInfo.data.friends);
-    console.log(userInfo.data.aboutMe);
+    //console.log(userInfo.data.aboutMe);
     setAbout(userInfo.data.aboutMe);
     setImage(userInfo.data.image);
   }
@@ -31,26 +31,26 @@ const Profile = (props) => {
       }
     );
     setAbout("");
-    console.log(newAboutMe);
+    //console.log(newAboutMe);
   }
   // useEffect(() => {
   //     handleSubmit();
   // },[user._id])
 
   async function getPosts() {
-    console.log(user._id);
+    //console.log(user._id);
     let response = await axios.get(
       `http://localhost:3011/api/users/${user._id}/posts/`
     );
     setAllPosts(response.data);
-    console.log(response.data);
+    //console.log(response.data);
   }
   useEffect(() => {
     getUserAboutMeInfo();
     getPosts();
   }, []);
 
-  console.log(`image`, image);
+  //console.log(`image`, image);
   return (
     <div>
       <img src={`http://localhost:3011/${image}`}></img>

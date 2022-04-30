@@ -160,7 +160,9 @@ router.put("/:userId/newPost",  async (req, res) => {
         .send(`Post with Id of ${req.params.userId} does not exist!`);
 
     let newPost = new Post({
-      post: req.body.post,
+      name: req.body.name,
+      uID: req.body.uID,
+      post: req.body.post
     });
     console.log(newPost);
     post.post.push(newPost);
@@ -211,8 +213,8 @@ router.put("/:userId/aboutMe", [auth], async (req, res) => {
   }
 });
 
-// PUT likes and dislikes
-router.put("/:userId/post/:postId", async (req, res) => {
+// PUT likes
+router.put("/:userId/post/:postId/likes", async (req, res) => {
   try {
     let user = await User.findById(req.params.userId);
     if (!user)
@@ -224,8 +226,29 @@ router.put("/:userId/post/:postId", async (req, res) => {
 
     const post = user.post.id(req.params.postId);
     if (!post) return res.status(400).send(`There is no post.`);
-    post.likes = req.body.likes;
-    post.dislikes = req.body.dislikes;
+    post.likes++;
+
+    await user.save();
+    return res.send(post);
+  } catch (error) {
+    return res.status(500).send(`internal server errror: ${error}`);
+  }
+});
+
+// PUT dislikes
+router.put("/:userId/post/:postId/dislikes", async (req, res) => {
+  try {
+    let user = await User.findById(req.params.userId);
+    if (!user)
+      return res
+        .status(400)
+        .send(
+          `Could not find any comments with the ID of ${req.params.userId}`
+        );
+
+    const post = user.post.id(req.params.postId);
+    if (!post) return res.status(400).send(`There is no post.`);
+    post.dislikes++;
 
     await user.save();
     return res.send(post);

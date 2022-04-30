@@ -11,26 +11,28 @@ const HomePage = (props) => {
   const [userFriends, setUserFriends] = useState([]);
 
   async function getFriends() {
-    console.log(user._id);
+    //console.log(user._id);
     let response = await axios.get(
       `http://localhost:3011/api/users/${user._id}`
     );
-    console.log(response.data.friends);
+    //console.log(response.data);
     setUserFriends(response.data.friends);
   }
   async function getFriendPosts() {
+    setFriends([]);
     for (let i = 0; i < userFriends.length; i++) {
-      console.log(`userFullf:`, userFriends[i]);
       await axios
         .get(`http://localhost:3011/api/users/${userFriends[i]}/posts`)
         .then(
-          (response) => setFriends((friends) => [...friends, response.data])
-        );
+          (response) => {
+            //console.log(response.data)
+            setFriends((friends) =>[...friends, response.data])
+          });
     }
   }
 
   const flatArray = friends.flatMap(item => item);
-  console.log("flat", flatArray)
+  //console.log("flat", flatArray)
 
   const convertDate = flatArray.map(item => 
       ({...item,
@@ -39,7 +41,7 @@ const HomePage = (props) => {
   // console.log( new Date(item.dateAdded));
    // item.dateAdded = Date.parse(item.dateAdded)
   ).sort((date1, date2) => date2.sortDate - date1.sortDate);
-  console.log(convertDate)
+  //console.log(convertDate)
 
   useEffect(() => {
     getFriends();
@@ -47,7 +49,7 @@ const HomePage = (props) => {
 
   useEffect(() => {
     getFriendPosts();
-    console.log(friends);
+    //console.log(friends);
   }, [userFriends]);
 
   return (
@@ -66,8 +68,9 @@ const HomePage = (props) => {
               return (
                   <tr>
                   <td key={i}>
+                    <h4>{f.name}</h4>
                     <h5>{f.post}</h5>
-                    <LikeDislike postId={f._id} like={f.likes} dislikes={f.dislikes} getFriendPosts={getFriendPosts}/>
+                    <LikeDislike f = {f}  getFriendPosts={getFriendPosts}/>
                   </td>
                   </tr>
                   )
@@ -75,21 +78,6 @@ const HomePage = (props) => {
             }
       </tbody>
     </table>
-
-    // <div>
-    //   <h3>Friends Posts</h3>
-    //   {friends &&
-    //     friends.map((friend, i) => {
-    //       return (
-    //         <div key={i}>
-    //           <div>
-    //             <h5> {friend.likes}</h5>
-    //           </div>
-    //           {/* <p className="msgtxt p-3">{post.post} </p> */}
-    //         </div>
-    //       );
-    //     })}
-    // </div>
   );
 };
 

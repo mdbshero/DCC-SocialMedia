@@ -3,8 +3,6 @@ import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
 
-
-
 const Profile = (props) => {
   const [post, setPosts] = useState([]);
   const { user } = useContext(AuthContext);
@@ -24,13 +22,13 @@ const Profile = (props) => {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    let newAboutMe = await axios.put(
+    let newAboutMe = {
+      aboutMe: about,
+    };
+    await axios.put(
       `http://localhost:3011/api/users/${user._id}/aboutMe/`,
-      {
-        aboutMe: about,
-      }
+      newAboutMe
     );
-    setAbout("");
     //console.log(newAboutMe);
   }
   // useEffect(() => {
@@ -54,7 +52,7 @@ const Profile = (props) => {
   return (
     <div>
       <img src={`http://localhost:3011/${image}`}></img>
-      <form id="AboutMe" onSubmit={handleSubmit}>
+      <form id="AboutMe" onSubmit={(event) => handleSubmit(event)}>
         <label>About me:</label>
         <textarea
           className="form-control w-100 mt-2 mb-2"
@@ -62,6 +60,7 @@ const Profile = (props) => {
           value={about}
           onChange={(e) => setAbout(e.target.value)}
         />
+        <input className="btn btn-info" type="submit" value="Add" />
       </form>
       <div className="p-3">
         <h2>About Me</h2>
@@ -80,7 +79,6 @@ const Profile = (props) => {
                 </div>
                 <p className="msgtxt p-3">{post.post} </p>
               </div>
-              
             );
           })}
       </div>

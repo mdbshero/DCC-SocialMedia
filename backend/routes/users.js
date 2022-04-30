@@ -199,7 +199,7 @@ router.delete("/:userId/deletePost/:postId", async (req, res) => {
 });
 
 //PUT add an about me
-router.put("/:userId/aboutMe", [auth], async (req, res) => {
+router.put("/:userId/aboutMe", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user)

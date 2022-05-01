@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 import { useContext } from "react";
+import "./ProfilePage.css";
+import PostFeed from "../../components/PostFeed/PostFeed";
 
 const Profile = (props) => {
   const [post, setPosts] = useState([]);
@@ -9,6 +11,9 @@ const Profile = (props) => {
   const [allPosts, setAllPosts] = useState([]);
   const [about, setAbout] = useState("");
   const [image, setImage] = useState("");
+  const jwt = localStorage.getItem("token");
+  const config = { headers: { Authorization: `Bearer ${jwt}` } };
+  const [userData, setUserData] = useState([]);
 
   async function getUserAboutMeInfo() {
     let userInfo = await axios.get(
@@ -20,6 +25,14 @@ const Profile = (props) => {
     setImage(userInfo.data.image);
   }
 
+  async function getUserInfo() {
+    let userInfo = await axios.get(
+      `http://localhost:3011/api/users/${user._id}`,
+      config
+    );
+    console.log(userInfo.data.post);
+    setUserData(userInfo.data.post);
+  }
   async function handleSubmit(event) {
     event.preventDefault();
     let newAboutMe = {
@@ -31,9 +44,6 @@ const Profile = (props) => {
     );
     //console.log(newAboutMe);
   }
-  // useEffect(() => {
-  //     handleSubmit();
-  // },[user._id])
 
   async function getPosts() {
     //console.log(user._id);
@@ -46,42 +56,35 @@ const Profile = (props) => {
   useEffect(() => {
     getUserAboutMeInfo();
     getPosts();
+    getUserInfo();
   }, []);
 
   //console.log(`image`, image);
   return (
-    <div>
+    <div className="container">
       <img src={`http://localhost:3011/${image}`}></img>
-      <form id="AboutMe" onSubmit={(event) => handleSubmit(event)}>
-        <label>About me:</label>
+      <form
+        className="form"
+        id="AboutMe"
+        onSubmit={(event) => handleSubmit(event)}
+      >
+        <label>Update About me:</label>
         <textarea
           className="form-control w-100 mt-2 mb-2"
           type="text"
           value={about}
           onChange={(e) => setAbout(e.target.value)}
         />
-        <input className="btn btn-info" type="submit" value="Add" />
+        <button type="submit">Update</button>
       </form>
       <div className="p-3">
         <h2>About Me</h2>
-        <div className="d-flex bg-light border border-dark text-dark mb-2">
+        <div>
           <p className="p-2">{about}</p>
         </div>
       </div>
-      <div class="card mb-3">
-        <h3 className="card_body">Posts</h3>
-        {allPosts &&
-          allPosts.map((post, i) => {
-            return (
-              <div key={i} className="card mb-3">
-                <div className="d-flex bg-primary text-white p-2">
-                  <h5 className="w-75">Posted {post.dateAdded}</h5>
-                </div>
-                <p className="msgtxt p-3">{post.post} </p>
-              </div>
-            );
-          })}
-      </div>
+
+      <PostFeed userData={userData} getUserInfo={getUserInfo} />
     </div>
   );
 };

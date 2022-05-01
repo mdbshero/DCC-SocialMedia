@@ -2,6 +2,7 @@ import React, {  useEffect, useState } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import axios from "axios";
+import "./PostFeed.css"
 
 const PostFeed = (props) => {
     const { user } = useContext(AuthContext);
@@ -21,7 +22,7 @@ const PostFeed = (props) => {
 
                 return(
                     <div>
-                        <table>
+                        <table className="table table-striped table-sm">
                             <thead>
                                 <tr>
                                     <th>{user.name} Post</th>

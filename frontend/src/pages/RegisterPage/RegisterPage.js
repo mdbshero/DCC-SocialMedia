@@ -2,7 +2,7 @@ import React, { useContext, useRef } from "react";
 import AuthContext from "../../context/AuthContext";
 import useCustomForm from "../../hooks/useCustomForm";
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import './RegisterPage.css'
 const RegisterPage = () => {
   const { registerUser } = useContext(AuthContext);
   const defaultValues = { name: "", email: "", password: "", isAdmin: false };
@@ -73,7 +73,7 @@ const RegisterPage = () => {
             onChange={handleInputChange}
           />
         </label>
-        <button className="btn btn-success">Register!</button>
+        <button>Register!</button>
       </form>
     </div>
   );

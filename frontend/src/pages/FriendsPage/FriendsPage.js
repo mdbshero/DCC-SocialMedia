@@ -14,6 +14,7 @@ const FriendsPage = () => {
   const jwt = localStorage.getItem("token");
   const config = { headers: { Authorization: "Bearer " + jwt } };
 
+
   async function getUserFriendInfo() {
     setUserFriends([]);
     setUserPending([]);

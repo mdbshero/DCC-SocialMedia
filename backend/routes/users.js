@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Get all users
-router.get("/", [auth], async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const users = await User.find();
     return res.send(users);

@@ -10,6 +10,9 @@ const FriendsPage = () => {
   const [userPending, setUserPending] = useState([]);
   const [friends, setFriends] = useState([]);
   const [pending, setPending] = useState([]);
+  const [allPeople, setAllPeople] = useState([]);
+  const jwt = localStorage.getItem("token");
+  const config = { headers: { Authorization: "Bearer " + jwt } };
 
   async function getUserFriendInfo() {
     setUserFriends([]);
@@ -23,6 +26,17 @@ const FriendsPage = () => {
     //console.log(userInfo.data.pending);
     setUserFriends(userInfo.data.friends);
     setUserPending(userInfo.data.pendingFriends);
+  }
+
+  async function getAll() {
+    setAllPeople([]);
+    console.log(jwt);
+    let res = await axios.get(`http://localhost:3011/api/users`, config);
+    for (let i = 0; i < res.data.length; i++) {
+      if (user._id !== res.data[i]._id) {
+        setAllPeople((allPeople) => [...allPeople, res.data[i]]);
+      }
+    }
   }
 
   async function getFriendInfo() {
@@ -91,8 +105,21 @@ const FriendsPage = () => {
     getUserFriendInfo();
   }
 
+  async function handlePendingSubmit(event, requested) {
+    event.preventDefault();
+    let sender = {
+      userId: user._id,
+    };
+    requested = requested._id;
+    await axios.put(
+      `http://localhost:3011/api/users/${requested}/pending`,
+      sender
+    );
+  }
+
   useEffect(() => {
     getUserFriendInfo();
+    getAll();
   }, []);
 
   useEffect(() => {
@@ -142,40 +169,69 @@ const FriendsPage = () => {
           </table>
         </div>
         <div className="col-sm">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Pending Friends</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pending &&
-                  pending.map((e, index) => {
-                    return (
-                      <tr>
-                        <td key={index}>
-                          <img src={`http://localhost:3011/${e.image}`}></img>
-                          <h5>{e.name}</h5>
-                          <button
-                            type="delete"
-                            id="declinePendingButton"
-                            onClick={(event) => handleClickAccept(event, e)}
-                          >
-                            Accept
-                          </button>
-                          <button
-                            type="delete"
-                            id="declinePendingButton"
-                            onClick={(event) => handleClickDecline(event, e)}
-                          >
-                            Decline
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Pending Friends</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pending &&
+                pending.map((e, index) => {
+                  return (
+                    <tr>
+                      <td key={index}>
+                        <img src={`http://localhost:3011/${e.image}`}></img>
+                        <h5>{e.name}</h5>
+                        <button
+                          type="delete"
+                          id="declinePendingButton"
+                          onClick={(event) => handleClickAccept(event, e)}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          type="delete"
+                          id="declinePendingButton"
+                          onClick={(event) => handleClickDecline(event, e)}
+                        >
+                          Decline
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+        <div className="col-sm">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Send Friend Request</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allPeople &&
+                allPeople.map((a, index) => {
+                  return (
+                    <tr>
+                      <td key={index}>
+                        <img src={`http://localhost:3011/${a.image}`}></img>
+                        <h5>{a.name}</h5>
+                        <button
+                          type="submit"
+                          id="SendPendingButton"
+                          onClick={(event) => handlePendingSubmit(event, a)}
+                        >
+                          Send Request
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

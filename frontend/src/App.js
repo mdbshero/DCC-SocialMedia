@@ -7,7 +7,9 @@ import HomePage from "./pages/HomePage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import PostPage from "./pages/PostPage/PostPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage"
+import bootstrap from "bootstrap"
 
 // Component Imports
 import Navbar from "./components/NavBar/NavBar";
@@ -17,10 +19,12 @@ import Footer from "./components/Footer/Footer";
 import PrivateRoute from "./utils/PrivateRoute";
 
 
+
 function App() {
   return (
     <div>
       <Navbar />
+      <body>
       <Routes>
         <Route path="/" element={
         <PrivateRoute>
@@ -34,6 +38,13 @@ function App() {
           </PrivateRoute>
         }
         />
+
+        <Route path="/profile" element={
+          <PrivateRoute>
+            <ProfilePage/>
+                    </PrivateRoute>
+                  }
+        />
         <Route path="/friends" element={
           <PrivateRoute>
             <FriendsPage/>
@@ -43,6 +54,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
+      </body>
       <Footer />
     </div>
   );

@@ -1,0 +1,16 @@
+label {
+    font-weight: bold;
+}
+
+button {
+    background: rgb(6, 59, 6);
+    border: 2px solid white;
+    color: white;
+    padding: 0.4rem 0.5rem;
+  }
+  
+  button:hover {
+    background: rgb(9, 138, 9);
+    color: white;
+    cursor: pointer;
+  }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import LikeDislike from "../../components/LikeDislikes/LikeDislikes";
@@ -23,24 +23,23 @@ const HomePage = (props) => {
     for (let i = 0; i < userFriends.length; i++) {
       await axios
         .get(`http://localhost:3011/api/users/${userFriends[i]}/posts`)
-        .then(
-          (response) => {
-            //console.log(response.data)
-            setFriends((friends) =>[...friends, response.data])
-          });
+        .then((response) => {
+          //console.log(response.data)
+          setFriends((friends) => [...friends, response.data]);
+        });
     }
   }
 
-  const flatArray = friends.flatMap(item => item);
+  const flatArray = friends.flatMap((item) => item);
   //console.log("flat", flatArray)
 
-  const convertDate = flatArray.map(item => 
-      ({...item,
-      sortDate : new Date(item.dateAdded)
-      })
-  // console.log( new Date(item.dateAdded));
-   // item.dateAdded = Date.parse(item.dateAdded)
-  ).sort((date1, date2) => date2.sortDate - date1.sortDate);
+  const convertDate = flatArray
+    .map(
+      (item) => ({ ...item, sortDate: new Date(item.dateAdded) })
+      // console.log( new Date(item.dateAdded));
+      // item.dateAdded = Date.parse(item.dateAdded)
+    )
+    .sort((date1, date2) => date2.sortDate - date1.sortDate);
   //console.log(convertDate)
 
   useEffect(() => {
@@ -53,31 +52,32 @@ const HomePage = (props) => {
   }, [userFriends]);
 
   return (
-    //   <div>
-    //  <h1 className="container">Home Page for {user.name}!</h
-    //   </div>
-    <table>
+    <div className="container">
+     <h2>Home Page for {user.name}!</h2>
+    <table className="table">
       <thead>
         <tr>
-          <td>Friends Posts</td>
+          <td>Friends Name</td>
+          <td>Post</td>
+          <td>{" "}</td>
         </tr>
       </thead>
       <tbody>
-          {convertDate &&
-            convertDate.map((f, i) => {
-              return (
-                  <tr>
-                  <td key={i}>
-                    <h4>{f.name}</h4>
-                    <h5>{f.post}</h5>
-                    <LikeDislike f = {f}  getFriendPosts={getFriendPosts}/>
-                  </td>
-                  </tr>
-                  )
-                })
-            }
+        {convertDate &&
+          convertDate.map((f, i) => {
+            return (
+              <tr key={i}>
+                <td>{f.name}</td>
+                <td>{f.post}</td>
+                <td>
+                  <LikeDislike f={f} getFriendPosts={getFriendPosts} />
+                </td>
+              </tr>
+            );
+          })}
       </tbody>
     </table>
+    </div>
   );
 };
 

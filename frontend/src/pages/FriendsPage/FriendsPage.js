@@ -3,15 +3,19 @@ import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import AuthContext from "../../context/AuthContext";
 import jwtDecode from "jwt-decode";
+import "./FriendsPage.css";
 
 const FriendsPage = () => {
-  const [userFriends, setUserFriends] = useState();
-  const [userPending, setUserPending] = useState();
+  const [userFriends, setUserFriends] = useState([]);
+  const [userPending, setUserPending] = useState([]);
   const [friends, setFriends] = useState([]);
   const [pending, setPending] = useState([]);
 
-
   async function getUserFriendInfo() {
+    setUserFriends([]);
+    setUserPending([]);
+    setFriends([]);
+    setPending([]);
     let userInfo = await axios.get(
       `http://localhost:3011/api/users/${user._id}`
     );
@@ -23,20 +27,23 @@ const FriendsPage = () => {
 
   async function getFriendInfo() {
     //console.log(`testing`, userFriends)
+    setFriends([]);
     for (let i = 0; i < userFriends.length; i++) {
-      console.log(`userFullf:`, userFriends[i]);
+      //console.log(`userFullf:`, userFriends[i]);
       await axios
         .get(`http://localhost:3011/api/users/${userFriends[i]}`)
         .then((response) =>
           setFriends((friends) => [...friends, response.data])
         );
+      console.log(friends);
     }
   }
 
   async function getPendingFriendInfo() {
+    setPending([]);
     //console.log(`testing`, userFriends)
     for (let i = 0; i < userPending.length; i++) {
-      //console.log(`userFullp:`, userPending[i]);
+      //console.log(`userFullp:`, userPending[i])
       await axios
         .get(`http://localhost:3011/api/users/${userPending[i]}`)
         .then((response) =>
@@ -56,26 +63,32 @@ const FriendsPage = () => {
       `http://localhost:3011/api/users/${mainUser}/unfollow`,
       unfollowed
     );
-    getFriendInfo();
+    getUserFriendInfo();
   }
 
   async function handleClickDecline(event, declined) {
     event.preventDefault();
+    setFriends([]);
+    setPending([]);
     let mainUser = user._id;
     console.log(declined._id);
     await axios.delete(
       `http://localhost:3011/api/users/${mainUser}/decline/${declined._id}`
     );
+    getUserFriendInfo();
   }
 
   async function handleClickAccept(event, accepted) {
     event.preventDefault();
+    setFriends([]);
+    setPending([]);
     let mainUser = user._id;
     accepted = {
       userId: accepted._id,
     };
     //console.log(unfollowed);
     await axios.put(`http://localhost:3011/api/users/${mainUser}`, accepted);
+    getUserFriendInfo();
   }
 
   useEffect(() => {
@@ -92,56 +105,57 @@ const FriendsPage = () => {
 
   const { user } = useContext(AuthContext);
   return (
-    <div>
-      <h1 className="container">Friends Page for {user.name}!</h1>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Friends</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
+    <div className="container">
+      <h3>Friends Page for {user.name}!</h3>
+      <div className="row">
+        <div className="col-sm">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Friends</th>
+              </tr>
+            </thead>
+            <tbody>
               {friends &&
                 friends.map((friend, index) => {
                   return (
                     <tr>
                       <td key={index}>
+                        <img
+                          src={`http://localhost:3011/${friend.image}`}
+                        ></img>
                         <h5>{friend.name}</h5>
-                        <div>
-                          <button
-                            type="submit"
-                            id="deleteFriendButton"
-                            onClick={(event) =>
-                              handleClickUnfollow(event, friend)
-                            }
-                          >
-                            Delete
-                          </button>
-                        </div>
+                        <button
+                          type="submit"
+                          id="deleteFriendButton"
+                          onClick={(event) =>
+                            handleClickUnfollow(event, friend)
+                          }
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   );
                 })}
-            </tr>
-          </tbody>
-        </table>
-        <table>
-          <thead>
-            <tr>
-              <th>Pending Friends</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {pending &&
-                pending.map((e, index) => {
-                  return (
-                    <tr>
-                      <td key={index}>
-                        <h5>{e.name}</h5>
-                        <div>
+            </tbody>
+          </table>
+        </div>
+        <div className="col-sm">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Pending Friends</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pending &&
+                  pending.map((e, index) => {
+                    return (
+                      <tr>
+                        <td key={index}>
+                          <img src={`http://localhost:3011/${e.image}`}></img>
+                          <h5>{e.name}</h5>
                           <button
                             type="delete"
                             id="declinePendingButton"
@@ -156,14 +170,13 @@ const FriendsPage = () => {
                           >
                             Decline
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tr>
-          </tbody>
-        </table>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+        </div>
       </div>
     </div>
   );

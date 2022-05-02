@@ -18,15 +18,13 @@ const LikeDislikes = (props) => {
   }
 
   return (
-    <div className="rate_post text-end">
-      <div className="d-flex">
-        <div className="mr-3">
+    <div>
+      <div >
+        <div>
           <div>
             <button type="button" className="bg-success m-3 text-white" onClick={(event) => handleLikes(event)}>
               Like {props.f.likes}
             </button>
-          </div>
-          <div>
             <button type="button" className="bg-success m-3 text-white" onClick={(event) => handleDislikes(event)}>
               Dislike {props.f.dislikes}
             </button>

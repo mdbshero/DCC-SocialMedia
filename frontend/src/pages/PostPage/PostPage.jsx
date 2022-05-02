@@ -13,6 +13,7 @@ const PostPage = (props) => {
     const config = {'headers' : { 'Authorization' : `Bearer ${jwt}`}};
     const [userData, setUserData] = useState([]);
     
+    
     async function getUserInfo(){
         let userInfo = await axios.get(`http://localhost:3011/api/users/${user._id}`, config);
         console.log(userInfo.data.post)
